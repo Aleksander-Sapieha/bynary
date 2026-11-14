@@ -12,23 +12,12 @@ class TextOSVM:
         self.running = False
         self.memory = [{}]
         self.call_stack = []
-        self.globals = {}
-        self.memory = [{}]
-        self.call_stack = []
         self.max_call_depth = 1000
 
 
 
     def load(self, binary):
-        # print("RAW INPUT:")
-        # print(repr(binary))
-
         binary = "".join(binary.split())
-
-        # print("CLEAN INPUT:")
-        # print(binary)
-        # print("TOTAL BITS:", len(binary))
-        # print("REMAINDER:", len(binary) % 32)
 
         if len(binary) % 32 != 0:
             raise ValueError(f"Invalid: {len(binary)} Bits")
@@ -48,7 +37,6 @@ class TextOSVM:
         self.call_stack = []
 
 
-
     def run(self):
         self.running = True
         self.output = print
@@ -62,32 +50,42 @@ class TextOSVM:
             if opcode == "PUSH":
                 self.stack.append(operand)
 
-            elif opcode == "POP":
-                self.stack.pop()
-
             elif opcode == "ADD":
-                b = self.stack.pop()
-                a = self.stack.pop()
-                self.stack.append(a + b)
+                try:
+                    b = self.stack.pop()
+                    a = self.stack.pop()
+                    self.stack.append(a + b)
+                except TypeError:
+                    self.output("Error: Incompatible types! You can't add a string and an int!")
 
             elif opcode == "SUB":
-                b = self.stack.pop()
-                a = self.stack.pop()
-                self.stack.append(a - b)
+                try:
+                    b = self.stack.pop()
+                    a = self.stack.pop()
+                    self.stack.append(a - b)
+                except TypeError:
+                    self.output("Error: Incompatible types! You can't subtract a string from an int!")
 
             elif opcode == "MUL":
-                b = self.stack.pop()
-                a = self.stack.pop()
-                self.stack.append(a * b)
+                try:
+                    b = self.stack.pop()
+                    a = self.stack.pop()
+                    self.stack.append(a * b)
+                except TypeError:
+                    self.output("Error: Incompatible types! You can't multiply a string and an int!")
 
             elif opcode == "DIV":
-                b = self.stack.pop()
-                a = self.stack.pop()
+                try:
+                    b = self.stack.pop()
+                    a = self.stack.pop()
 
-                if b == 0:
-                    raise ZeroDivisionError("Division by zero")
+                    if b == 0:
+                        raise ZeroDivisionError("Division by zero isn't allowed!")
 
-                self.stack.append(a // b)
+                    self.stack.append(a // b)
+                except TypeError:
+                    self.output("Error: Incompatible types! You can't divide a string and an int!")
+
 
             elif opcode == "PRINT":
                 self.output(str(self.stack.pop()))
@@ -186,7 +184,70 @@ class TextOSVM:
 
                 self.globals[operand] = self.stack.pop()
 
+            elif opcode == "INPUT":
+                inp = input()
+                self.stack.append(inp)
 
+            elif opcode == "F_WRITE":
+                if len(self.stack) < 2:
+                    raise RuntimeError("Not enough stack values")
+
+                path = self.stack.pop()
+                contents = self.stack.pop()
+
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(str(contents))
+
+
+            elif opcode == "F_READ":
+                if not self.stack:
+                    raise RuntimeError("Stack is empty")
+
+                path = self.stack.pop()
+
+                with open(path, "r", encoding="utf-8") as f:
+                    self.stack.append(f.read())
+
+            elif opcode == "F_EXISTS":
+                import os
+
+                if not self.stack:
+                    raise RuntimeError("Stack is empty")
+
+                path = self.stack.pop()
+                self.stack.append(int(os.path.exists(path)))
+
+            elif opcode == "STRING":
+                length = operand
+
+                chars = []
+
+                for _ in range(length):
+                    if self.ip >= len(self.program):
+                        raise RuntimeError("Unexpected end of string")
+
+                    value = int(self.program[self.ip], 2)
+                    chars.append(chr(value))
+                    self.ip += 1
+
+                self.stack.append("".join(chars))
+
+            elif opcode == "F_DEL":
+                import os
+                if len(self.stack) < 1:
+                    raise RuntimeError("Not enough stack values")
+
+                path = self.stack.pop()
+
+                os.remove(path)
+
+            elif opcode == "F_SIZE":
+                import os
+                if len(self.stack) < 1:
+                    raise RuntimeError("Not enough stack values")
+                path = self.stack.pop()
+                size = os.stat(path).st_size
+                self.stack.append(size)
 
 
 
