@@ -1,10 +1,11 @@
 import sys
 from vm import TextOSVM
 
-if len(sys.argv) != 1:
+if len(sys.argv) != 2:
     print("Usage: runb <path to .tbin file>")
 else:
-    binary = sys.argv[1]
+    with open(sys.argv[1]) as f:
+        binary = f.read()
 
 vm = TextOSVM()
 vm.load(binary)
