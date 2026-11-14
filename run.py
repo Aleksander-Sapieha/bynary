@@ -8,7 +8,7 @@ from compile import compile_tlib
 
 if len(sys.argv) < 2:
     print("Usage:")
-    print("  runb <file.tbin or file.tbinc>")
+    print("  runb run <file.tbin or file.tbinc>")
     print("  runb compile <file.tbin>")
     sys.exit(1)
 
