@@ -186,7 +186,13 @@ class TextOSVM:
 
             elif opcode == "INPUT":
                 inp = input()
-                self.stack.append(inp)
+            
+                try:
+                    inp = int(inp)
+                except ValueError:
+                    pass
+
+    self.stack.append(inp)
 
             elif opcode == "F_WRITE":
                 if len(self.stack) < 2:
