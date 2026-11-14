@@ -14,3 +14,7 @@ runb compile <path to .tbin file>
 ```
 runb run <path to .tbin or .tbinc>
 ```
+
+## License
+
+You can redistribute the runb file, so that users dont need to manually download it
