@@ -192,7 +192,7 @@ class TextOSVM:
                 except ValueError:
                     pass
 
-    self.stack.append(inp)
+                self.stack.append(inp)
 
             elif opcode == "F_WRITE":
                 if len(self.stack) < 2:
