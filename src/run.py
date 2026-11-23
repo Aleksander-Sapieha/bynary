@@ -2,9 +2,9 @@
 import sys
 import os
 
-from vm import TextOSVM
-from loader import load_tbc
-from compile import compile_tlib
+from src.vm import TextOSVM
+from src.loader import load_tbc
+from src.compile import compile_tlib
 
 if len(sys.argv) < 2:
     print("Usage:")

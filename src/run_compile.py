@@ -1,4 +1,4 @@
-from compile import compile_tlib
+from src.compile import compile_tlib
 
 file = input("Path: ")
 

@@ -1,6 +1,6 @@
 import os
 
-from vm import TextOSVM
+from src.vm import TextOSVM
 
 
 def run_binary(path, output_callback=print):

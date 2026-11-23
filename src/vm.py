@@ -1,7 +1,7 @@
 
 # vm.py
 
-from instructions import decode
+from src.instructions import decode
 
 
 class TextOSVM:
